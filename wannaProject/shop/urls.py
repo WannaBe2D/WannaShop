@@ -5,6 +5,7 @@ from . import views
 
 router = SimpleRouter()
 router.register(r'products', views.ProductList)
+router.register(r'categories', views.CategoryList)
 
 urlpatterns = [
 
