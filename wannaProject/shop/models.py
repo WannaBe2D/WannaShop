@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -24,3 +25,11 @@ class Product(models.Model):
 
     def __str__(self):
         return f'ID: {self.id} | {self.name} | {self.category} | {self.price}'
+
+
+class Basket(models.Model):
+    items = models.ManyToManyField(Product, blank=True)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return f'{self.owner.id} | {self.owner}'

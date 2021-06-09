@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import ProductSerializer, CategorySerializer
-from.models import Product, Category
+from.models import Product, Category, Basket
 
 
 class Logout(APIView):
@@ -23,7 +24,20 @@ class ProductList(ReadOnlyModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
 
+    def perform_authentication(self, request):
+        print('Username:', request.user)
+
 
 class CategoryList(ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class MyBasket(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        if not hasattr(request.user, 'basket'):
+            Basket.objects.create(owner=request.user)
+
+        return Response([i.name for i in request.user.basket.items.all()])

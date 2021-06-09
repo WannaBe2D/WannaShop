@@ -9,6 +9,7 @@ router.register(r'categories', views.CategoryList)
 
 urlpatterns = [
     path('logout/', views.Logout.as_view(), name='logout'),
+    path('basket/', views.MyBasket.as_view(), name='my_basket'),
 ]
 
 urlpatterns += router.urls
