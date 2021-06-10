@@ -8,7 +8,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import ProductSerializer, CategorySerializer
-from.models import Product, Category, Basket
+from .models import Product, Category, Basket
 
 
 class Logout(APIView):
@@ -36,7 +36,11 @@ class MyBasket(APIView):
         if not hasattr(request.user, 'basket'):
             Basket.objects.create(owner=request.user)
 
-        return Response([i.name for i in request.user.basket.items.all()])
+        items = request.user.basket.items.all()
+        return Response({"products":
+                             ({"id": i.id, "name": i.name, "price": i.price} for i in items),
+                         "totalPrice":
+                             (i.price for i in items)})
 
 
 class AddProductInBasket(APIView):
