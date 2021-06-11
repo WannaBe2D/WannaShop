@@ -4,10 +4,10 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from .serializers import ProductSerializer, CategorySerializer
+from .serializers import ProductSerializer, CategorySerializer, ProductCategoryDetailSerializer
 from .models import Product, Category, Basket
 
 
@@ -27,6 +27,17 @@ class ProductList(ReadOnlyModelViewSet):
 class CategoryList(ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    action_to_serializer = {
+        "retrieve": ProductCategoryDetailSerializer,
+    }
+
+    def get_serializer_class(self):
+        return self.action_to_serializer.get(
+            self.action,
+            self.serializer_class
+        )
 
 
 class MyBasket(APIView):

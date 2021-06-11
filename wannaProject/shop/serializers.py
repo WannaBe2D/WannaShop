@@ -18,3 +18,15 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name')
+
+
+class ProductCategoryDetailSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+    @staticmethod
+    def get_products(obj):
+        return ProductSerializer(Product.objects.filter(category=obj), many=True).data
