@@ -20,9 +20,13 @@ from django.urls import path, include
 
 from rest_framework.authtoken.views import obtain_auth_token
 
+from .yasg import urlpatterns as dic_url
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('shop.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/token', obtain_auth_token, name='token')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += dic_url
