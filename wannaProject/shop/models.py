@@ -33,3 +33,11 @@ class Basket(models.Model):
 
     def __str__(self):
         return f'{self.owner.id} | {self.owner}'
+
+
+class Order(models.Model):
+    items = models.ManyToManyField(Product)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.id} | {self.owner}'

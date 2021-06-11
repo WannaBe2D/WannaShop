@@ -1,14 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from .serializers import ProductSerializer, CategorySerializer, ProductCategoryDetailSerializer
-from .models import Product, Category, Basket
+from .serializers import ProductSerializer, CategorySerializer, ProductCategoryDetailSerializer, OrderSerializer
+from .models import Product, Category, Basket, Order
 
 
 class Logout(APIView):
@@ -68,3 +69,31 @@ class AddProductInBasket(APIView):
         basket.items.add(product)
         basket.save()
         return Response(status=status.HTTP_200_OK)
+
+
+class MyOrder(ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        queryset = Order.objects.filter(owner=request.user)
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Order.objects.filter(owner=request.user)
+        order = get_object_or_404(queryset, pk=pk)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def add_to_order(request):
+    items = Basket.objects.get(owner=request.user).items.all()
+    if items:
+        order = Order.objects.create(owner=request.user)
+        order.items.set(items)
+        Basket.objects.get(owner=request.user).items.clear()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Category, Basket
+from .models import Product, Category, Basket, Order
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -30,3 +30,11 @@ class ProductCategoryDetailSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_products(obj):
         return ProductSerializer(Product.objects.filter(category=obj), many=True).data
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = ProductSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Order
+        fields = ('id', 'items',)
