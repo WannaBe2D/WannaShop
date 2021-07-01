@@ -13,7 +13,7 @@ class Image(models.Model):
     image = models.ImageField(upload_to='productImage')
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.id} {self.image}'
 
 
 class Product(models.Model):
@@ -22,6 +22,11 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     images = models.ManyToManyField(Image, blank=True, related_name='picProduct')
+    SEX_CHOICES = [
+        ('M', 'MEN'),
+        ('W', 'WOMEN'),
+    ]
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, default='M')
 
     def __str__(self):
         return f'ID: {self.id} | {self.name} | {self.category} | {self.price}'

@@ -23,6 +23,7 @@ class Logout(APIView):
 class ProductList(ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CategoryList(ReadOnlyModelViewSet):
@@ -50,7 +51,7 @@ class MyBasket(APIView):
 
         items = request.user.basket.items.all()
         return Response({"products":
-                             ({"id": i.id, "name": i.name, "price": i.price} for i in items),
+                             ({"id": i.id, "name": i.name, "price": i.price, "image": {str(i.image.url) for i in i.images.all()}} for i in items),
                          "totalPrice":
                              (i.price for i in items)})
 
